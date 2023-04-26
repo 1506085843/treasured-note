@@ -583,6 +583,14 @@ Reader是所有读取字符串输入流的祖先，而writer是所有输出字�
    buf.close(); //关闭缓冲区并将信息写入文件
    f.close();
   ```
+    为防止文件乱码你可以使用utf-8编码:
+  ```java
+		File file1 = new File("F:/test/te.txt");
+		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file1), 	StandardCharsets.UTF_8));
+		writer.write("要输入的字符串");
+		writer.flush();
+		writer.close();
+  ```
 
   
 ### 十七、输入流转化为byte数组
