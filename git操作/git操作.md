@@ -330,6 +330,21 @@ git reflog --date=local | grep 你的分支名
 # 二十七、本地项目上传 github
 如果你有一个项目，想把它上传到github，可参照我另一篇文章：[本地项目上传github](https://blog.csdn.net/qq_33697094/article/details/111995819)
 
+# 二十八、查询某一文件的删除时间和删除人
+如果你不知道某一文件是谁在什么时候删除的，想查询该文件的删除时间、删除人以及提交id，可使用如下命令：
+```bash
+git log --full-history -- 你的文件名
+```
+例如：
+查找 datamodel/fi/1.5/main/ar/metadata/sm_salorder_ar_finarbill_1669423033909277696.cr 的删除时间
+```bash
+git log --full-history -- datamodel/fi/1.5/main/ar/metadata/sm_salorder_ar_finarbill_1669423033909277696.cr
+```
+结果：
+第一条便是删除的时间、删除人等信息
+
+![请添加图片描述](https://img-blog.csdnimg.cn/ea5f7534efc6415188bc81714ae304ea.png)
+
 ---
 
 参考：
