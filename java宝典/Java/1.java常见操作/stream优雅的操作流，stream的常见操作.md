@@ -64,8 +64,22 @@
         Integer[] integerArry = Arrays.stream(intArry).boxed().toArray(Integer[]::new);
 ```
 
+
 # 九、int [] 最大、最小值、平均值，求和
 
+```java
+        int[] arr = new int[]{12,3,34,67,100,99};
+        int maxValue = Arrays.stream(arr).max().getAsInt();
+        int minValue = Arrays.stream(arr).min().getAsInt();
+        double averValue = Arrays.stream(arr).average().getAsDouble();
+        int sumValue = Arrays.stream(arr).sum();
+        System.out.println("the max:" + maxValue);
+        System.out.println("the min:" + minValue);
+        System.out.println("the average:" + averValue);
+        System.out.println("the sum:" + sumValue);
+```
+上面是流里面使用 max、min、average 、sum方法获取数组的最大、最小值、平均值，求和。
+除了上面的方法还可以像下面这样获取最大值、最小值、平均值，求和。
 ```java
         int[] intArray = {12,3,34,67,100,99};
         IntStream intStream = IntStream.of(intArray);
@@ -74,7 +88,7 @@
         System.out.println("the min:" + statistics.getMin());
         System.out.println("the average:" + statistics.getAverage());
         System.out.println("the sum:" + statistics.getSum());
-        System.out.println("the count:" + statistics.getCount());
+        System.out.println("the count:" + statistics.getCount());//statistics.getCount()相当于获取数组大小
 ```
 
 # 十、String[] 对每个元素分割并转换为其他类型
@@ -242,7 +256,18 @@ System.out.println(subtraction);//[7, 8]
         Set<String> values = map.values().stream().collect(Collectors.toSet());
 ```
 
-# 二十一、Map<String, List<Integer\>>获取所有的values为一个List<Integer\>
+# 二十一、Map对value求和
+```java
+        Map<String, Integer> map = new HashMap<>();
+        map.put("1", 11);
+        map.put("2", 22);
+        map.put("3", 100);
+        Integer sum = map.values().stream().mapToInt(Integer::valueOf).sum();
+        System.out.println(sum);
+```
+
+
+# 二十二、Map<String, List<Integer\>>获取所有的values为一个List<Integer\>
 将map 里的所有value合并为一个List
 ```java
        List<Integer> list1 = new ArrayList<>(Arrays.asList(1, 2, 3));
@@ -261,23 +286,34 @@ System.out.println(subtraction);//[7, 8]
 ```
 
 
-# 二十二、String[]中的元素转大写并转为List\<String\>
+# 二十三、String[]中的元素转大写并转为List\<String\>
 ```java
         String[] strArray= { "java", "react", "angular", "vue" };
         List<String> list = Stream.of(strArray).map(test -> test.toUpperCase()).collect(Collectors.toList());
 ```
-# 二十三、List\<String\>中统计首字母是j的个数
+
+# 二十四、对String字符串中的数字求和
+首先需要将该字符串转换为数组，接下来需要过滤掉非整数元素，最后，将该数组的剩余元素转换为数字并求和。
+```java
+        String string = "Item1 10 Item2 25 Item3 30 Item4 45";
+
+        Integer sum = Arrays.stream(string.split(" "))
+                .filter((s) -> s.matches("\\d+"))
+                .mapToInt(Integer::valueOf)
+                .sum();
+```
+# 二十五、List\<String\>中统计首字母是j的个数
 ```java
         List<String> list = Arrays.asList("java", "react", "angular", "javascript", "vue");
         long count = list.stream().filter(p -> p.startsWith("j")).count();
 ```
-# 二十四、List\<String\>中获取第一个首字母是j的元素
+# 二十六、List\<String\>中获取第一个首字母是j的元素
 ```java
         List<String> list = Arrays.asList( "react","java", "angular", "javascript", "vue");
         //java
         String firstJ = list.stream().filter(p -> p.startsWith("j")).findFirst().get();
 ```
-# 二十五、List\<String\>统计各字符串出现的次数
+# 二十七、List\<String\>统计各字符串出现的次数
 
 ```java
         List<String> items = Arrays.asList("apple", "apple", "orange", "orange", "orange", "blueberry", "peach", "peach", "peach", "peach");
@@ -286,13 +322,13 @@ System.out.println(subtraction);//[7, 8]
         System.out.println(result);
 ```
 
-# 二十六、 List去除重复元素
+# 二十八、 List去除重复元素
 ```java
         List<String> list = Arrays.asList("aa", "bb", "cc", "bb");
         List<String> distinctList = list.stream().distinct().collect(Collectors.toList());
 ```
 
-# 二十七、List<List\<String\>>转List\<String\>
+# 二十九、List<List\<String\>>转List\<String\>
 ```java
         List<String> a = Arrays.asList("Virat", "Dhoni", "Jadeja");
         List<String> b = Arrays.asList("1", "2", "3");
@@ -305,7 +341,7 @@ System.out.println(subtraction);//[7, 8]
         System.out.println(newList);
 ```
 
-# 二十八、多个List\<String\> 合并为一个List\<String\>
+# 三十、多个List\<String\> 合并为一个List\<String\>
 ```java
     public static void main(String[] args) {
         List<String> list1=new ArrayList<>(Arrays.asList("a","b","c"));
@@ -330,7 +366,7 @@ System.out.println(subtraction);//[7, 8]
 
 
 
-# 二十九、List\<Object\>转Map<String, Object>
+# 三十一、List\<Object\>转Map<String, Object>
 假设有Student类，里面含有id、name、score等信息。现在想把 List\<Student\> 转化为Map<String,Student>，其中key是name。
 ```java
         List<Student> list = new ArrayList<>();
@@ -338,7 +374,7 @@ System.out.println(subtraction);//[7, 8]
         list.add(new Student(2, "李四", 60));
         Map<String, Student> map = list.stream().collect(Collectors.toMap(Student::getName, Function.identity()));
 ```
-# 三十、 List\<Object\>针对某一成员变量获取最大、小值的Object
+# 三十二、 List\<Object\>针对某一成员变量获取最大、小值的Object
 假设有 Student 类，里面含有 id、name、score 等信息。现在想获取List\<Student\> 中 score 最大的 Student 和 score 最小的 Student。
 
 ```java
@@ -347,15 +383,13 @@ System.out.println(subtraction);//[7, 8]
         list.add(new Student(2, "李四", 60));
         list.add(new Student(3, "刘一", 70));
         list.add(new Student(4, "李四", 99));
-        //获取score最大值
-        Optional<Student> maxOptStudent = list.stream().collect(Collectors.maxBy(Comparator.comparing(Student::getScore)));
-        Student maxStudent = maxOptStudent.get();
-        //获取score最小值
-        Optional<Student> mixOptStudent = list.stream().collect(Collectors.minBy(Comparator.comparing(Student::getScore)));
-        Student minxStudent = mixOptStudent.get();
+        //获取score最大的Student
+        Student maxStudent = list.stream().max(Comparator.comparing(Student::getScore)).get();
+        //获取score最小的Student
+        Student minxStudent = list.stream().min(Comparator.comparing(Student::getScore)).get();
 ```
-# 三十一、 List\<Object\>获取某个成员变量最大、最小值、平均值，求和
-假设有 Student 类，里面含有 id、name、score 等信息。现在想获取 List\<Student\> 中的 score 的最大值、最小值、平均值，求和
+# 三十三、 List\<Object\>获取某个成员变量最大、最小值、平均值，求和
+假设有 Student 学生类，里面含有 id、name、score 等信息。现在想获取 List\<Student\> 中的 score 的最大值、最小值、平均值，求和：
 ```java
         List<Student> list = new ArrayList<>();
         list.add(new Student(1, "小名", 17));
@@ -371,7 +405,36 @@ System.out.println(subtraction);//[7, 8]
         System.out.println(intSummary.getMin());// 17
         System.out.println(intSummary.getSum());// 117
 ```
-# 三十二、List<Integer> 获取最大、最小值、平均值，求和
+如果你只想求和可以像下面这样写：
+```java
+        List<Student> list = new ArrayList<>();
+        list.add(new Student(1, "小名", 17));
+        list.add(new Student(2, "小红", 18));
+        list.add(new Student(3, "小蓝", 19));
+        list.add(new Student(4, "小灰", 20));
+        list.add(new Student(5, "小黄", 21));
+        list.add(new Student(6, "小白", 22));
+
+        Integer sum = list.stream().mapToInt(Student::getScore).sum();//117
+        //下面注释的两行代码和上一行的效果一样，都可以进行求和
+        //Integer sum = list.stream().map(Student::getScore).reduce(0, Integer::sum);
+        //Integer sum = list.stream().map(Student::getScore).mapToInt(Integer::intValue).sum();
+```
+# 三十四、List\<Integer> 获取最大、最小值、平均值，求和
+
+```java
+        List<Integer> list = Arrays.asList(12, 3, 34, 67, 100, 99);
+        int maxValue = list.stream().max(Integer::compare).get();
+        int minValue = list.stream().min(Integer::compare).get();
+        double averValue = list.stream().mapToDouble(a -> a).average().getAsDouble();
+        int sumValue = list.stream().reduce(0, Integer::sum);
+        System.out.println("the max:" + maxValue);
+        System.out.println("the min:" + minValue);
+        System.out.println("the average:" + averValue);
+        System.out.println("the sum:" + sumValue);
+```
+上面是流里面使用 max、min、average 、reduce 方法获取数组的最大、最小值、平均值，求和。
+除了上面的方法还可以像下面这样获取最大值、最小值、平均值，求和。
 
 ```java
         List<Integer> list = new ArrayList<>(Arrays.asList(12,3,34,67,100,99));
@@ -380,7 +443,7 @@ System.out.println(subtraction);//[7, 8]
         System.out.println("the min:" + statistics.getMin());
         System.out.println("the average:" + statistics.getAverage());
         System.out.println("the sum:" + statistics.getSum());
-        System.out.println("the count:" + statistics.getCount());
+        System.out.println("the count:" + statistics.getCount());//获取list大小
 ```
 
 
