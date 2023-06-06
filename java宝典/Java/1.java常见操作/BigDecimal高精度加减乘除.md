@@ -51,6 +51,31 @@ flag = -1, 表示 num1 小于 num2 ；
 flag = 0, 表示 num1 等于 num2 ；
 flag = 1, 表示 num1 大于 num2 ；
 
+**初始化：**
+
+```java
+ BigDecimal num1 = new BigDecimal("0");
+ BigDecimal num2 = new BigDecimal("1");
+ BigDecimal num2 = new BigDecimal("10");
+```
+
+BigDecimal提供了0、1、10 这三个数的默认值创建：
+
+```java
+BigDecimal num1 =  BigDecimal.ZERO;
+BigDecimal num2 =  BigDecimal.ONE;
+BigDecimal num2 =  BigDecimal.TEN;
+```
+下面的代码和上面的代码是等价的：
+
+```java
+ BigDecimal num1 = new BigDecimal("0");
+ BigDecimal num2 = new BigDecimal("1");
+ BigDecimal num2 = new BigDecimal("10");
+```
+
+
+
 ---
 参考：
 [DecimalFormat的使用](https://www.jianshu.com/p/b3699d73142e)
