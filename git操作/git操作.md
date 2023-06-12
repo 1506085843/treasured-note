@@ -237,6 +237,11 @@ git diff XXXX   #XXXX是版本号
 git diff XXXX1 XXXX2   #XXXX1和XXXX2是版本号
 ```
 
+（8）.除了上面的使用，还可以很方便的对比两个文件的差异
+（对比电脑 D 盘的 revised.txt 和 original.txt 的差异）
+```bash
+ git diff --no-index D:/revised.txt D:/original.txt
+```
 
 -----
 # 二十、cherry-pick操作
