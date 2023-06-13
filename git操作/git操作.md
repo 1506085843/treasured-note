@@ -238,11 +238,14 @@ git diff XXXX1 XXXX2   #XXXX1和XXXX2是版本号
 ```
 
 （8）.除了上面的使用，还可以很方便的对比两个文件的差异
-（对比电脑 D 盘的 revised.txt 和 original.txt 的差异）
+对比电脑 D 盘的 revised.txt 和 original.txt 的差异，只显示差异：
 ```bash
  git diff --no-index D:/revised.txt D:/original.txt
 ```
-
+对比 revised.txt 和 original.txt 显示差异和文本所有内容，显示所有差异和文件内容：
+```bash
+git diff --no-prefix -U99999  D:/revised.txt D:/original.txt
+```
 -----
 # 二十、cherry-pick操作
 dev分支上依次有A、B、C、D 4次提交，每次提交了许多改动的文件，现在需要将B、D两次提交的改动也同步到master分支：
