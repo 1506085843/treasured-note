@@ -1,6 +1,8 @@
 [TOC]
 # 介绍
 
+
+
 **Tess4J** 是 Tesseract OCR 的 java api 实现库，你可以通过 java 调用来轻松的实现图片识别并提取文字，也就是 OCR 图片提取文字技术。
 
 Tess4J 支持识别的的图片格式：
@@ -36,15 +38,11 @@ Tess4J 支持识别的的图片格式：
         </dependency>
 ```
 
-# 二、下载配置文件夹和语言模型
+# 二、下载语言模型
 
-如果因为网络问题，你访问不了 github 或配置文件夹、语言模型下载缓慢失败，可以直接看第3步百度云下载。
+如果因为网络问题，你访问不了 github 或语言模型下载缓慢失败，可以直接看第2步百度云下载。
 
-## 1.下载配置文件夹
-
-github：[tesseract地址](https://github.com/tesseract-ocr/tesseract) 下载整个项目 ，然后把 tessdata 文件夹复制到项目的 resources 文件夹下。
-
-## 2.下载语言模型
+## 1.下载语言模型
 
 tesseract 支持一百多种语言识别，你可以从 [Traineddata 语言模型说明下载页面](https://github.com/tesseract-ocr/tessdoc/blob/main/Data-Files.md#data-files-for-version-400-november-29-2016) 选择自己想要识别的`.traineddata `格式的语言模型文件下载。
 
@@ -66,7 +64,7 @@ tesseract 在 GitHub 上的有三个独立的语言模型存储库 [tessdata](ht
 
 我测试识别一张多文字图片的时候，tessdata-best 效果最好但花了快10秒，tessdata 花了3秒但效果稍微差一点。你可以根据自己的需要去选择下载语言模型文件，我这里选择的是 [tessdata-best](https://github.com/tesseract-ocr/tessdata_best) 库里下载 chi_sim.traineddata （简体中文）、eng.traineddata （英文模型）。
 
-因为网络问题，如果你访问不了 github 或下载缓慢，可以从我的百度云下载 tessdata 和 tessdata-best，里面包含了所有的语言模型文件，（如果你只需要中英文的模型可以看我第4步）：
+因为网络问题，如果你访问不了 github 或下载缓慢，可以从我的百度云下载 tessdata 和 tessdata-best，里面包含了所有的语言模型文件，（如果你只需要中英文的模型可以看我第 2 步）：
 
 百度云下载: [tessdata-4.1.0.zip 约 635 MB](https://pan.baidu.com/s/1e2UKTpMqnfhpCoq6NquIAQ ) （链接：https://pan.baidu.com/s/1e2UKTpMqnfhpCoq6NquIAQ 
 提取码：jc9p）
@@ -74,15 +72,15 @@ tesseract 在 GitHub 上的有三个独立的语言模型存储库 [tessdata](ht
 百度云下载: [tessdata_best-4.1.0.zip  约1.29 GB](https://pan.baidu.com/s/1dcHpukvaH6Rtma_drfqD9g  ) （链接：https://pan.baidu.com/s/1dcHpukvaH6Rtma_drfqD9g 
 提取码：w3gh）
 
-**（3）下载后把需要的 `.traineddata` 格式的语言模型文件放到项目的 resources /tessdata / 下。**
+**（3）项目的 resources 文件夹下新建 tessdata 文件夹，然后把上面下载的 `.traineddata` 格式的语言模型文件复制到 tessdata 下。**
 
-我这里下载的是 chi_sim.traineddata （简体中文模型）、eng.traineddata （英文模型）、osd.traineddata （文字方向检测模型），其他语言图片识别的时候没用到所以只把这三个文件放到 resources /tessdata / 下。
 
-## 3.百度云下载
+## 2.百度云下载
 
-如果因为网络问题，你访问不了 github 或下载缓慢失败，可以从百度云下载我的 tessdata.zip ，里面包含了上面 的配置文件夹和中英文语言模型 ，解压后把 tessdata 文件夹复制到你的 resources 文件夹下即可：
+如果因为网络问题，你访问不了 github 或下载缓慢失败，可以从百度云下载我的 tessdata.zip ，里面包含了中英文语言模型 ，解压后把 tessdata 文件夹复制到你的 resources 文件夹下即可：
 
-百度云下载: [tessdata.zip 约27MB](https://pan.baidu.com/s/13BEqmudhxAX7FTsCD7zcKQ ) （链接：https://pan.baidu.com/s/13BEqmudhxAX7FTsCD7zcKQ  提取码：tppz）
+百度云下载: [tessdata.zip 约27MB](https://pan.baidu.com/s/1nXHJ_e4kzOGHbFwh95ijEg) （链接：https://pan.baidu.com/s/1nXHJ_e4kzOGHbFwh95ijEg 
+提取码：k1qu）
 
 #  三、测试
 
@@ -132,6 +130,8 @@ String result = tesseract.doOCR(image, new Rectangle(300, 200));
 
 
 ## 3.效果
+
+
 
 ![请添加图片描述](https://img-blog.csdnimg.cn/152b44042128472ab8b9a0f3b42156cc.jpeg)
 
