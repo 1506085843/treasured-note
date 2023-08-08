@@ -93,7 +93,7 @@ public class Student {
 
 ## 1. 调用静态 mock 方法初始化 mock
 
-在测试方法里使用 MockitoAnnotations.openMocks(this) 来初始化 mock，然后使用 mock 静态方法来模拟一个对象实例:
+在测试方法里使用 mock 静态方法来模拟一个对象实例:
 
 ```java
 import org.junit.jupiter.api.Test;
