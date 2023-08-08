@@ -1,4 +1,4 @@
-[TOC]
+@[TOC](目录)
 
 # 一、介绍
 
@@ -120,11 +120,14 @@ public class MainServer {
         System.out.println("当前网址的链接："+driver.getCurrentUrl());
         System.out.println();
 
-
+		//获取多个 h4 标签元素
         List<WebElement> articleTitles = driver.findElements(By.xpath("//*[@class='blog-list-box-top']/h4"));
+        //获取多个 a 标签元素
         List<WebElement> articleUrls = driver.findElements(By.xpath("//*[@class='blog-list-box']/a"));
         for (int i = 0; i < articleTitles.size(); i++) {
+        	//获取 h4 标签中的显示文本
             String articleTitle = articleTitles .get(i).getText();
+            //获取 a 标签里的 href 属性的值
             String articleUrl = articleUrls.get(i).getAttribute("href");
             System.out.println("文章标题："+articleTitle+" 链接："+articleUrl);
         }
@@ -138,9 +141,9 @@ public class MainServer {
 
 1.上面的代码使用了System.setProperty 来加载驱动，当然，你也可以把它配置到环境变量里就不用从代码里加载驱动了。你可以参考这篇文章来配置驱动的环境变量：[selenium配置使用chromedriver](https://blog.csdn.net/kun_csdn/article/details/124267821)。
 
-2.上面的代码使用了 implicitlyWait 方法来显式等待页面加载完，然后再去查找第一条搜索结果并点击，如果不等页面加载完就查找会找不到并报错。除了显式等待，还有隐式等待、流利等待，你可参考官网的说明：[selenium Waits](https://www.selenium.dev/documentation/webdriver/waits/)
+2.上面的代码使用了 implicitlyWait 方法来显式等待页面加载完，然后再去查找第一条搜索结果并点击，如果不等页面加载完就查找会找不到并报错。除了显式等待，还有隐式等待、流利等待，你可参考官网的说明：[selenium Waits](https://www.selenium.dev/documentation/webdriver/waits/) 。或者你也可以使用 Thread.sleep(2000L); 来让线程等待 2 秒。
 
-3.如果想不打开浏览器即不打开浏览器 GUI，只让程序在后台跑把数据加载到内存在内存操作输出结果，可以把上面第18行代码替换为如下：
+3.如果想不打开浏览器即不打开浏览器 GUI，只让程序在后台跑把数据加载到内存在内存操作输出结果（即无头浏览器），可以把上面第18行代码替换为如下：
 
 ```java
         ChromeOptions options = new ChromeOptions();
@@ -260,7 +263,6 @@ CSS 是用于设置 HTML 页面样式的语言。我们可以使用 css 选择�
   [XPath in Selenium: How to Find & Write](https://www.guru99.com/xpath-selenium.html)
 [How to use XPath in Selenium](https://www.browserstack.com/guide/xpath-in-selenium)
 
-
 ### (9) Selenium IDE 插件辅助定位元素
 如果你对 html 不熟悉或者用定位器来找网页元素不方便，你可以先使用本文介绍部分提到的 Selenium IDE 插件操作一遍，然后选择保存项目，它会把所有操作保存成一个 `.side` 后缀格式的文件，文件里面有每一步操作的描述，
 并且每一步操作里面的 targets 生成了多种定位器，你代码里直接使用 targets 里的一种定位器去直接写就好了，就不用自己去分析网页编写定位器定位元素了。
@@ -268,17 +270,30 @@ CSS 是用于设置 HTML 页面样式的语言。我们可以使用 css 选择�
 ![请添加图片描述](https://img-blog.csdnimg.cn/9d320e6112914e5bba8d72831ff4fe90.jpeg)
 
 ![请添加图片描述](https://img-blog.csdnimg.cn/e74061e029f446448d55bfa5ae2ca987.jpeg)
+### (10) chrome浏览器开发控制台定位元素后复制Xpath
+还有一种简单的方式。chrome 浏览器网页上右键检查（或 F12），点击左上角的箭头，然后点击网页上的元素进行定位，再定位后的代码上右键复制里选择复制 XPath , 你就可以很方便的在代码里使用 xpath 定位器了。
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/abec74b9d4bd4bbf9aa44f9fa805b9b9.png)
+
+![在这里插入图片描述](https://img-blog.csdnimg.cn/0adbd2d7c5a7435096b43b742a2c3cb0.png)
+
 
 # 六、常见操作
-## 1.打开网址链接
+
+## 1.打开一个新的浏览器页签
+```java
+//打开一个新的浏览器页签
+driver.switchTo().newWindow(WindowType.TAB);
+```
+## 2.打开网址链接
 ```java
 //方便的方式
 driver.get("http://www.baidu.com");
-//或者长一点的方式
+//或者下面的方式，是一样的效果
 driver.navigate().to("http://www.baidu.com");
 ```
 
-## 2.获取当前网页的标题和链接
+## 3.获取当前网页的标题和链接
 ```java
 //读取当前页面标题
 driver.getTitle();
@@ -287,7 +302,7 @@ driver.getCurrentUrl();
 ```
 
 
-## 3.浏览器前进、后退、刷新、关闭
+## 4.浏览器前进、后退、刷新、关闭
 ```java
 //浏览器的后退
 driver.navigate().back();
@@ -298,7 +313,7 @@ driver.navigate().refresh();
 //关闭浏览器
 driver.quit();
 ```
-## 4.弹窗的警告、确认
+## 5.弹窗的警告、确认
 
 （1）获取警告弹窗的文本并点击确认
 ```java
@@ -337,6 +352,38 @@ Alert alert = wait.until(ExpectedConditions.alertIsPresent());
 alert.sendKeys("你好啊");
 //按确定按钮
 alert.accept();
+```
+
+## 6.在已打开的浏览器打开网址链接
+默认的如果你使用 selenium 进行操作，selenium  会打开一个新的浏览器窗口然后再打开链接，并且这个新打开的浏览器窗口是没有插件 的（即使你浏览器里安装了插件）。那如何在已经打开的浏览器里打开链接呢？
+
+（1）先关闭你的浏览器
+
+（2）找到你浏览器的启动目录
+选择浏览器图标，右键选择属性，点击打开文件所在的位置，然后复制该文件夹路径。
+
+（3）新建个叫 chromeStart 的 txt 文件，内容如下，把下面第一行的路径替换成你上面复制的文件夹路径，然后保存
+```bash
+cd C:\Program Files\Google\Chrome\Application
+start chrome.exe --flag-switches-begin --flag-switches-end --remote-debugging-port=9222
+```
+
+（4）把上面的 chromeStart.txt 文件后缀改为 bat  然后双击 chromeStart.bat 会打开浏览器
+
+（5） selenium 代码要如下
+
+```java
+        //加载 chromedriver 驱动
+        System.setProperty("webdriver.chrome.driver", "D:\\Program\\chromedriver\\chromedriver.exe");
+
+        //使用已经打开的浏览器窗口
+        ChromeOptions options = new ChromeOptions();
+        options.setExperimentalOption("debuggerAddress", "127.0.0.1:9222");
+        WebDriver driver = new ChromeDriver(options);
+        //打开一个新的页签
+        driver.switchTo().newWindow(WindowType.TAB);
+        //打开链接
+        driver.navigate().to("https://www.baidu.com");
 ```
 
 # 七、使用 cookie
@@ -404,3 +451,4 @@ public static void main(String[] args) {
 [JAVA使用selenium的常见爬虫操作](https://blog.csdn.net/shaomeng7426/article/details/125820368)
 [Selenium with Python](https://selenium-python.readthedocs.io/)
 [Selenium WebDriver](https://www.javatpoint.com/selenium-webdriver)
+[selenium 使用使用已经打开的浏览器](https://www.cnblogs.com/testway/p/16676195.html)
