@@ -354,7 +354,16 @@ alert.sendKeys("你好啊");
 alert.accept();
 ```
 
-## 6.在已打开的浏览器打开网址链接
+## 6.判断页面的元素是否存在
+
+```java
+int headImage = driver.findElements(By.xpath("//*[@class='user_avatar']")).size();
+if (headImage == 0) {
+ 	System.out.println("页面上 class 为 user_avatar 的 html 元素不存在");
+}
+```
+
+## 7.在已打开的浏览器打开网址链接
 默认的如果你使用 selenium 进行操作，selenium  会打开一个新的浏览器窗口然后再打开链接，并且这个新打开的浏览器窗口是没有插件 的（即使你浏览器里安装了插件）。那如何在已经打开的浏览器里打开链接呢？
 
 （1）先关闭你的浏览器
