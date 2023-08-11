@@ -160,19 +160,58 @@ querySelector 是元素选择器，可用于 id 和 class 选择，也就是上�
 
 ## 2.用法示例
 
-(1)  取得DOM中第一个 id= “box” 的元素
+(1)  获取标签名叫 "select" 和 "html" 的元素
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+</head>
+
+<body>
+    <label for="theme">选择主题：</label>
+    <select id="theme">
+        <option value="white">白</option>
+        <option value="black">黑</option>
+    </select>
+
+    <h1>这是我的网页</h1>
+
+</body>
+<script>
+    const select = document.querySelector("select");
+    const html = document.querySelector("html");
+    document.body.style.padding = "10px";
+
+    function update(bgColor, textColor) {
+        html.style.backgroundColor = bgColor;
+        html.style.color = textColor;
+    }
+
+    select.addEventListener("change", () =>
+        select.value === "black"
+            ? update("black", "white")
+            : update("white", "black"),
+    );
+</script>
+
+</html>
+```
+
+(2)  获取 DOM中第一个 id= “box” 的元素
 
 ```html
 document.querySelector("#box") 
 ```
 
-(2)  取得DOM中第一个 class= “box” 的元素
+(3)  获取DOM中第一个 class= “box” 的元素
 
 ```html
 document.querySelector(".box") 
 ```
 
-（3）选择器中逗号分割表示或者
+(4) 选择器中逗号分割表示或者
 
 querySelector 里可用逗号分割来表示或者的意思，下面的示例姓名输入框在年龄输入框前所以获取到的是姓名，若年龄输入框在前就会获取到年龄。
 
@@ -202,7 +241,7 @@ querySelector 里可用逗号分割来表示或者的意思，下面的示例姓
 </html>
 ```
 
-（4）复杂场景的选择器使用
+(5) 复杂场景的选择器使用
 
 查找页面  div 标签里 class="user-panel main"  的元素中 第一个 name = "login" 的 input 元素。
 
