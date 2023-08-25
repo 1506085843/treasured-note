@@ -363,6 +363,8 @@ git checkout tags/1.1.0
 
 ### 二十二、代码暂存
 
+**1.命令行对代码进行暂存和恢复**
+
 如果本地代码没开发完成，这个时候去拉取最新的代码可能会有冲突；或者本地代码没开发完，此时要切换分支可以使用暂存功能。
 ```bash
 git stash
@@ -379,8 +381,20 @@ git stash pop stash@{0}
 ```bash
 git stash drop stash@{0}
 ```
+**2.IDEA中Stash与shevle两者的区别**
+
+(1).Stash是Git提供的功能，而shevle是IDEA本身提供的功能。
+
+(2).Stash和shevle都能将当前分支未commit的文件暂时存储起来，后面方便的时候可以在原分支或其他分支对暂存的文件进行恢复。
+
+(3).Stash只能针对当前整个分支所有未commit的文件进行操作，不能只选择某个或某几个文件进行Stash暂存；而Shelve更灵活，可以对单个或多个未commit的文件进行Shelve搁置操作；
+
+(4).要恢复stash的文件时（unstash操作），如果本地有尚未commit的修改，那么此次unstash操作会失败。IDEA右下角会弹出提醒：你的本地修改将会被merge覆盖，请commit，stash或revert它们之后再继续。而恢复shelve的文件时（unshelve操作），无论本地有没有被修改的文件都不会影响。解决可能产生的冲突即可。
+
+(5).Stash的文件是放在.git文件中；Shelve的文件是放在.idea/shelf文件中。这意味着Stash的文件比Shelve的文件有更强的可移植性。
 
 ### 二十三、当前分支的所有文件中查找字符串
+
 在当前分支的所有文件中查找字符串 cullateSum 出现在哪些文件的哪几行
 ```bash
 git grep -n "cullateSum" 
