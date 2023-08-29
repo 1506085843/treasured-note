@@ -178,7 +178,7 @@ LocalDateTime 当秒数刚好为0的时候格式化后秒会被省略，格式�
         LocalDate localDate = LocalDate.of(2022, 4, 21);
         System.out.println("当前日期：" + localDate);
 
-        LocalTime localTime = LocalTime.of(12, 01, 01);
+        LocalTime localTime = LocalTime.of(12, 1, 1);
         System.out.println("当天时间：" + localTime);
 ```
 输出：
@@ -535,6 +535,18 @@ LocalDateTime 转为毫秒级和秒级时间戳：
         LocalDateTime localDateTime1 = Instant.ofEpochSecond(secondStamp).atZone(zoneId1).toLocalDateTime();
 
 ```
+
+## 十九、LocalDateTime 与 Date 的转换
+```java
+		//Date 转 LocalDateTime
+		Date date1 = new Date();
+        LocalDateTime localDateTime1 = date1.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+
+		//LocalDateTime转Date 
+		LocalDateTime localDateTime2 = LocalDateTime.now();
+        Date date2 = Date.from(localDateTime2.atZone(ZoneId.systemDefault()).toInstant());
+```
+
 ---
 
 参考：
