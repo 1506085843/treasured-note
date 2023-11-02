@@ -348,16 +348,16 @@ git tag -l
 ```
 
 （2）.新建一个分支该分支使用指定tag。
-假如新建一个dev2分支，该分支采用1.1.0代码
+假如新建一个dev2分支，该分支采用1.1.0 tag的代码
 
 ```bash
-git checkout tags/dev2 -b 1.1.0
+git checkout -b dev2 1.1.0
 ```
 
 （3）.切换到指定tag。假如要切换到1.1.0的tag
 
 ```bash
-git checkout tags/1.1.0
+git checkout 1.1.0
 ```
 
 
