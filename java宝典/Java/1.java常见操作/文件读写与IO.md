@@ -1,5 +1,7 @@
 [TOC]
 
+
+
 ### 一、从控制台输入
 
 ```java
@@ -54,6 +56,8 @@ Scanner scan = new Scanner(System.in);
     scan.close();
 ```
 
+
+
 ### 二、 获取当前代码运行的工作目录路径
 
 ```java
@@ -89,7 +93,18 @@ if (!folder.exists() && !folder.isDirectory()) {
    System.out.println("文件夹已存在");
 }
 ```
+- 根据文件路径判断文件所在的文件夹是否存在，不存在则创建文件夹
+```java
+//filePath是文件路径，如 "C:\\Users\\haitang\\Downloads\\html\\myExcelbb.html"
+    public static void createFolderIfNotExist(String filePath) {
+        File file = new File(filePath);
+        File parentDirectory = file.getParentFile();
 
+        if (!parentDirectory.exists()) {
+            parentDirectory.mkdirs();
+        }
+    }
+```
 ### 四、判断文件夹下有多少个文件和文件夹
 
 ```java
@@ -108,6 +123,8 @@ for(int i = 0; i < list.length; i++){
 System.out.println("文件个数："+fileCount);
 System.out.println("文件夹数："+folderCount);
 ```
+
+
 
 ### 五、遍历获取文件夹下所有文件的路径和名称
 **获取文件夹下所有文件，包括子文件夹下的文件路径：**
@@ -239,6 +256,7 @@ list()和listFiles()区别：
 - listFiles()返回的是文件和文件夹File数组，可以进行更多操作，如获取文件名、判断是否是文件等
 
 
+
 ### 六、获取文件名
 
 ```java
@@ -254,6 +272,8 @@ String fName = file.getOriginalFilename(); //file的类型是MultipartFile
 //或者  
 String fileName = fName.substring(fName.lastIndexOf("\\")+1);*/
 ```
+
+
 
 ### 七、获取文件大小
 
@@ -290,6 +310,7 @@ public static void main(String[] args) throws IOException {
         return Math.round(size) + units[i];
     }
 ```
+
 
 ### 八、获取文件行数
 针对可读文本文件获取行数：
@@ -422,12 +443,13 @@ public class TreeCopyFileVisitor extends SimpleFileVisitor<Path> {
     }
 ```
 
-### 十三、常用的文件信息的获取和处理方法
+### 十三、常用的文件信息的获取和处理方法（删除文件、获取文件根目录等）
 
 ```java
     File file = new File("F:/test/test2.txt");
     System.out.println("文件是否绝对路径：" + file.isAbsolute());
     System.out.println("取得文件的根目录：" + file.getParent());
+    System.out.println("文件的完全路径是: " + file.getAbsolutePath());
     System.out.println("文件是否存在：" + file.exists());
     System.out.println("是否是目录：" + file.isDirectory());
     System.out.println("是否是文件：" + file.isFile());
@@ -435,6 +457,9 @@ public class TreeCopyFileVisitor extends SimpleFileVisitor<Path> {
     System.out.println("是否可读：" + file.canRead());
     System.out.println("是否可写：" + file.canWrite());
     System.out.println("删除文件：" + file.delete());
+
+	//如果文件存在则删除
+	Files.deleteIfExists(Paths.get("F:/test/test2.txt")); 
 
 	/*使用renameTo进行文件重命名目录路径要一致*/
     File oldName = new File("F:/test/test2.txt");//重命名前的文件
@@ -452,6 +477,7 @@ public class TreeCopyFileVisitor extends SimpleFileVisitor<Path> {
 ```java
 文件是否绝对路径：true
 取得文件的根目录：F:\test
+文件的完全路径是:F:\test\test2.txt
 文件是否存在：true
 是否是目录：false
 是否是文件：true
@@ -465,9 +491,10 @@ public class TreeCopyFileVisitor extends SimpleFileVisitor<Path> {
 ```
 
 
+
 ### 十四、字节流与字符流的区别
 
-![\[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-T7BGA6Lh-1630638966036)(C:\Users\86132\AppData\Roaming\Typora\typora-user-images\image-20201014153242734.png)\]](https://img-blog.csdnimg.cn/5e641113922648819cb9752f13901670.png?x-oss-process=image/watermark,type_ZHJvaWRzYW5zZmFsbGJhY2s,shadow_50,text_Q1NETiBA6KW_5YeJ55qE5oKy5Lyk,size_20,color_FFFFFF,t_70,g_se,x_16)
+![\[外链图片转存失败,源站可能有防盗链机制,建议将图片保存下来直接上传(img-T7BGA6Lh-1630638966036)(C:\Users\86132\AppData\Roaming\Typora\typora-user-images\image-20201014153242734.png)\]](https://i-blog.csdnimg.cn/blog_migrate/e3ecba3889c51ed9139431cd209859bd.png)
 
 
 **字节流:**
@@ -488,6 +515,7 @@ Reader是所有读取字符串输入流的祖先，而writer是所有输出字�
 
 在从字节流转化为字符流时，实际上就是**byte[]转化为String**;
 而在字符流转化为字节流时，实际上是**String转化为byte[]**;
+
 
 
 ### 十五、使用字节流读写文件
@@ -555,6 +583,8 @@ Reader是所有读取字符串输入流的祖先，而writer是所有输出字�
 ```
 
 
+
+
 ### 十六、使用字符流读写文件
 
 - 读文件
@@ -583,7 +613,7 @@ Reader是所有读取字符串输入流的祖先，而writer是所有输出字�
    buf.close(); //关闭缓冲区并将信息写入文件
    f.close();
   ```
-    为防止文件乱码你可以使用utf-8编码:
+  为防止文件乱码你可以使用utf-8编码：
   ```java
 		File file1 = new File("F:/test/te.txt");
 		Writer writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file1), 	StandardCharsets.UTF_8));
@@ -591,8 +621,8 @@ Reader是所有读取字符串输入流的祖先，而writer是所有输出字�
 		writer.flush();
 		writer.close();
   ```
-
   
+
 ### 十七、输入流转化为byte数组
 
 ```java
@@ -607,6 +637,9 @@ in.close();
 bos.flush();
 byte[] result=bos.toByteArray(); //输出流转化成byte数组
 ```
+
+
+
 
 
 ### 十八、java8使用Files.readAllBytes()或Files.readAllLines优雅读文本文件
@@ -671,6 +704,19 @@ lines.forEach(v-> System.out.println(v));
             System.err.println(e);
         }
 ```
+将字符串写入文件，以 utf-8 格式
+```java
+ 		File file = new File("F:/ccc.txt");
+ 		String content = "你好啊。"
+        try {
+            Writer  writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), 	StandardCharsets.UTF_8));
+            writer.write(content);
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+```
 
 二进制文件（图片、音频等）：
 
@@ -680,6 +726,7 @@ FileOutputStream out = new FileOutputStream("F:/ccc.mp3");
 out.write(data);
 out.close();
 ```
+
 
 
 ### 二十、使用字节流复制文件
@@ -716,6 +763,8 @@ outputStream.close();
 
 经测试使用缓冲区的复制和下面的使用Files.copy()复制速度最快，比较推荐。
 
+
+
 ### 二十一、java8使用Files.copy()复制文件
 
 ```java
@@ -725,6 +774,8 @@ f.createNewFile();  //创建一个空的new.sql， 如果test目录下已经存�
 //复制文件
 Files.copy(source, new FileOutputStream(f));
 ```
+
+
 
 ### 二十二、使用IOUtils优雅操作流（字符串与InputStream的转化）
 
@@ -792,6 +843,8 @@ IOUtils.write("abc", outputStream,"GBK");//将abc写入文件，编码格式为G
 outputStream.close();
 ```
 
+
+
 3.文件拷贝
 
 ```java
@@ -813,6 +866,8 @@ out.close();
 ```
 
 参考：[Apache Commons IO之IOUtils优雅操作流](https://www.jianshu.com/p/6b4f9e5e2f8e)
+
+
 
 ### 二十三、 对象的序列化与反序列化
 
@@ -874,11 +929,17 @@ out.close();
     }
 ```
 
+
+
 实例：
 
 ```java
 public static void main(String[] args) throws IOException {        Student st = new Student(2,"张三");        List<Integer> score=new ArrayList<>();        score.add(99);        score.add(88);        st.setScore(score);        byte[] by = Test.serizlize(st);//对象转化为字节数组        /*字节数组写入文件*/        FileOutputStream outputStream = new FileOutputStream("F:/test/te.txt", true);        BufferedOutputStream buf = new BufferedOutputStream(outputStream); ////加入缓存区        buf.write(by);//将字节流写入文件        buf.close();  //关闭流        outputStream.close();        /*读取文件为字节数组*/        FileInputStream in = new FileInputStream("F:/test/te.txt");//输入流        ByteArrayOutputStream bos=new ByteArrayOutputStream();        byte[] buffer=new byte[1024];        int len=0;        while((len=in.read(buffer))!=-1){   //输入流转读取到字节数组输出流            bos.write(buffer,0,len);        }        in.close();        bos.flush();        byte[] result=bos.toByteArray(); //输出流转化成byte数组        /*字节数组转成对象*/        Student st2 = (Student)deserialize(result);        System.out.println(st2);//输出：id:2,name:张三,score:[99, 88],address:null    }
 ```
+
+
+
+
 
 ### 二十四、使用sftp进行服务器文件上传下载
 请参考我另一篇文章：
@@ -940,6 +1001,8 @@ public static void main(String[] args) throws IOException {        Student st = 
       }
   ```
 
+  
+
 - 读取图片文件进行调整图片大小
 
   ```java
@@ -958,6 +1021,8 @@ public static void main(String[] args) throws IOException {        Student st = 
   ```
 
   参考：[How Can I Resize an Image Using Java?](https://www.baeldung.com/java-resize-image)
+
+
 
 ### 二十六、将图片BufferedImage转换为MultipartFile
 
@@ -1042,6 +1107,7 @@ public static void main(String[] args) throws IOException {        Student st = 
   MultipartFile multipartFile = new ConvertToMultipartFile(imageToBytes(image), "pic1", "myPicture", "jpg", imageToBytes(image).length);
   ```
 
+  
 
 
 方法二：
@@ -1071,6 +1137,8 @@ try {
 ```
 
 参考：[How to convert BufferedImage to a MultiPart file without saving file to disk?](https://stackoverflow.com/questions/41163648/how-to-convert-bufferedimage-to-a-multipart-file-without-saving-file-to-disk)
+
+  
 
 ### 二十七、文件压缩
 
@@ -1228,6 +1296,8 @@ public class ZipUtils {
 }
 ```
 
+
+
 - 测试：压缩多个文件（利用byte[]压缩）
 
   ```java
@@ -1319,8 +1389,30 @@ public class ZipUtils {
 
 参考：[Java实现将文件或者文件夹压缩成zip](https://www.cnblogs.com/zeng1994/p/7862288.html)
 
-### 二十八、InputStream、FileInputStream 转 byte[ ]
 
+
+### 二十八、InputStream、FileInputStream 转 byte[ ]
+**方法一：**
+调用 toByteArray 方法
+```java
+    //InputStream 或 FileInputStream 转 byte[ ]
+    public static byte[] toByteArray(InputStream input) {
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        int nRead;
+        byte[] data = new byte[16384];
+        try {
+            while ((nRead = input.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return buffer.toByteArray();
+    }
+```
+
+**方法二：**
 利用Apache Commons IO库
 
 ```java
@@ -1331,8 +1423,28 @@ byte[] bytes = IOUtils.toByteArray(is);
 
 参考：[Convert InputStream to byte array in Java](https://stackoverflow.com/questions/1264709/convert-inputstream-to-byte-array-in-java)
 
-### 二十九、文本文件的InputStream、FileInputStream 转 String
 
+
+### 二十九、文本文件的InputStream、FileInputStream 转 String
+**方法一：**
+调用 inputStreamToString 方法
+```java
+	//InputStream 或 FileInputStream 转 String
+    public static String inputStreamToString(InputStream input) {
+        StringBuilder textBuilder = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(input, StandardCharsets.UTF_8))) {
+            int c;
+            while ((c = reader.read()) != -1) {
+                textBuilder.append((char) c);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return textBuilder.toString();
+    }
+```
+
+**方法二：**
 利用Apache Commons IO库
 
 ```java
@@ -1342,6 +1454,8 @@ String theString = writer.toString();
 ```
 
 参考：[How do I read / convert an InputStream into a String in Java?](https://stackoverflow.com/questions/309424/how-do-i-read-convert-an-inputstream-into-a-string-in-java)
+
+
 
 ### 三十、MultipartFile或byte[]转InputStream
 

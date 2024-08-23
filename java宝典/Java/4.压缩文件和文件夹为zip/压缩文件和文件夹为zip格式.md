@@ -1,53 +1,44 @@
-[TOC]
-# 一、工具类
+
 工具类ZipUtils 如下：
 
 ```java
-package utils;
+package com.hai.tang.util;
 
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.InputStream;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 public class ZipUtils {
     /**
-     *
      * 文件夹压缩成ZIP
      *
-     * @param srcDir           压缩文件夹路径
-     * @param out              压缩文件输出流
-     * @param keepDirStructure 是否保留原来的目录结构,true:保留目录结构;
-     *
-     *                         false:所有文件跑到压缩包根目录下(注意：不保留目录结构可能会出现同名文件,会压缩失败)
-     *
+     * @param srcDir           待压缩文件夹路径
+     * @param zipPathName      压缩文件输出路径（含名称及后缀）
+     * @param keepDirStructure 是否保留原来的目录结构：
+     *                         true:保留文件目录结构;
+     *                         false:不保留文件目录结构，把所有文件一起压缩，即提取文件夹及其所有子文件夹里的文件进行压缩，压缩后的压缩包里不含有文件夹
+     *                         (注意：不保留文件目录结构可能会出现同名文件,会压缩失败。例如：子文件夹 a下有 a.txt,子文件夹 b下有 a.txt )
      * @throws RuntimeException 压缩失败会抛出运行时异常
-     *
      */
-    public static void toZip(String srcDir, OutputStream out, boolean keepDirStructure)
-            throws RuntimeException {
-        long start = System.currentTimeMillis();
-        ZipOutputStream zos = null;
-        try {
-            zos = new ZipOutputStream(out);
+    public static void toZip(String srcDir, String zipPathName, boolean keepDirStructure) {
+        try (
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(zipPathName));
+                BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
+                ZipOutputStream zos = new ZipOutputStream(out);
+        ) {
             File sourceFile = new File(srcDir);
             compress(sourceFile, zos, sourceFile.getName(), keepDirStructure);
-            long end = System.currentTimeMillis();
-            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
         } catch (Exception e) {
-            throw new RuntimeException("zip error from ZipUtils", e);
-        } finally {
-            if (zos != null) {
-                try {
-                    zos.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            throw new RuntimeException("压缩错误", e);
         }
     }
 
@@ -55,203 +46,245 @@ public class ZipUtils {
     /**
      * 多文件压缩成ZIP
      *
-     * @param imageMap 需要压缩的文件列表，键值对为 <文件名，文件的字节数组>，文件名必须包含后缀
-     * @param out      压缩文件输出流
+     * @param imageMap    需要压缩的文件列表，键值对为 <文件名，文件的字节数组>，文件名必须包含后缀
+     * @param zipPathName 压缩文件输出路径（含名称及后缀）
      * @throws RuntimeException 压缩失败会抛出运行时异常
      */
-    public static void toZip(Map<String, byte[]> imageMap, OutputStream out) throws RuntimeException {
-        long start = System.currentTimeMillis();
-        try (ZipOutputStream zos = new ZipOutputStream(out)) {
+    public static void toZip(Map<String, byte[]> imageMap, String zipPathName) throws RuntimeException {
+        try (
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(zipPathName));
+                BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
+                ZipOutputStream zos = new ZipOutputStream(out);
+        ) {
             for (Map.Entry<String, byte[]> map : imageMap.entrySet()) {
                 zos.putNextEntry(new ZipEntry(map.getKey()));
                 zos.write(map.getValue());
                 zos.closeEntry();
             }
-            long end = System.currentTimeMillis();
-            System.out.println("压缩完成，耗时：" + (end - start) + " ms");
         } catch (Exception e) {
-            throw new RuntimeException("zip error from ZipUtils", e);
+            throw new RuntimeException("压缩错误", e);
         }
     }
 
 
     /**
      * 多文件压缩成ZIP
-     * @param srcFiles 需要压缩的文件列表
-     * @param out           压缩文件输出流
+     *
+     * @param srcFiles    需要压缩的文件列表
+     * @param zipPathName 压缩文件输出路径（含名称及后缀）
      * @throws RuntimeException 压缩失败会抛出运行时异常
      */
-    public static void toZip(List<File> srcFiles , OutputStream out)throws RuntimeException {
-        long start = System.currentTimeMillis();
-        try(ZipOutputStream zos= new ZipOutputStream(out)) {
+    public static void toZip(List<File> srcFiles, String zipPathName) throws RuntimeException {
+        try (
+                FileOutputStream fileOutputStream = new FileOutputStream(new File(zipPathName));
+                BufferedOutputStream out = new BufferedOutputStream(fileOutputStream);
+                ZipOutputStream zos = new ZipOutputStream(out);
+        ) {
             for (File srcFile : srcFiles) {
                 byte[] buf = new byte[2048];
                 zos.putNextEntry(new ZipEntry(srcFile.getName()));
                 int len;
                 FileInputStream in = new FileInputStream(srcFile);
-                while ((len = in.read(buf)) != -1){
+                while ((len = in.read(buf)) != -1) {
+                    zos.write(buf, 0, len);
+                }
+                zos.closeEntry();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("压缩错误", e);
+        }
+    }
+
+
+    /**
+     * 递归压缩方法
+     *
+     * @param sourceFile       源文件
+     * @param zos              zip输出流
+     * @param name             压缩后的名称
+     * @param keepDirStructure 是否保留原来的目录结构：
+     *                         true:保留目录结构;
+     *                         false:不保留文件目录结构，把所有文件一起压缩，即提取文件夹及其所有子文件夹里的文件进行压缩，压缩后的压缩包里不含有文件夹
+     *                         (注意：不保留文件目录结构可能会出现同名文件,会压缩失败。例如：子文件夹 a下有 a.txt,子文件夹 b下有 a.txt )
+     */
+    private static void compress(File sourceFile, ZipOutputStream zos, String name, boolean keepDirStructure) {
+        byte[] buf = new byte[2048];
+        try {
+            if (sourceFile.isFile()) {
+                // 向zip输出流中添加一个zip实体，构造器中name为zip实体的文件的名字
+                zos.putNextEntry(new ZipEntry(name));
+                // copy文件到zip输出流中
+                int len;
+                FileInputStream in = new FileInputStream(sourceFile);
+                while ((len = in.read(buf)) != -1) {
                     zos.write(buf, 0, len);
                 }
                 zos.closeEntry();
                 in.close();
-            }
-            long end = System.currentTimeMillis();
-            System.out.println("压缩完成，耗时：" + (end - start) +" ms");
-        } catch (Exception e) {
-            throw new RuntimeException("zip error from ZipUtils",e);
-        }
-    }
-
-
-
-    /**
-     *
-     * 递归压缩方法
-     * @param sourceFile       源文件
-     * @param zos              zip输出流
-     * @param name             压缩后的名称
-     * @param keepDirStructure 是否保留原来的目录结构,true:保留目录结构;
-     *
-     *                         false:所有文件跑到压缩包根目录下(注意：不保留目录结构可能会出现同名文件,会压缩失败)
-     * @throws Exception
-     */
-    private static void compress(File sourceFile, ZipOutputStream zos, String name, boolean keepDirStructure) throws Exception {
-        byte[] buf = new byte[2048];
-        if (sourceFile.isFile()) {
-            // 向zip输出流中添加一个zip实体，构造器中name为zip实体的文件的名字
-            zos.putNextEntry(new ZipEntry(name));
-            // copy文件到zip输出流中
-            int len;
-            FileInputStream in = new FileInputStream(sourceFile);
-            while ((len = in.read(buf)) != -1) {
-                zos.write(buf, 0, len);
-            }
-            // Complete the entry
-            zos.closeEntry();
-            in.close();
-        } else {
-            File[] listFiles = sourceFile.listFiles();
-            if (listFiles == null || listFiles.length == 0) {
-                // 需要保留原来的文件结构时,需要对空文件夹进行处理
-                if (keepDirStructure) {
-                    // 空文件夹的处理
-                    zos.putNextEntry(new ZipEntry(name + "/"));
-                    // 没有文件，不需要文件的copy
-                    zos.closeEntry();
-                }
             } else {
-                for (File file : listFiles) {
-                    // 判断是否需要保留原来的文件结构
+                File[] listFiles = sourceFile.listFiles();
+                if (listFiles == null || listFiles.length == 0) {
+                    // 需要保留原来的文件结构时,需要对空文件夹进行处理
                     if (keepDirStructure) {
-                        // 注意：file.getName()前面需要带上父文件夹的名字加一斜杠,
-                        // 不然最后压缩包中就不能保留原来的文件结构,即：所有文件都跑到压缩包根目录下了
-                        compress(file, zos, name + "/" + file.getName(), keepDirStructure);
-                    } else {
-                        compress(file, zos, file.getName(), keepDirStructure);
+                        // 空文件夹的处理
+                        zos.putNextEntry(new ZipEntry(name + "/"));
+                        // 没有文件，不需要文件的copy
+                        zos.closeEntry();
+                    }
+                } else {
+                    for (File file : listFiles) {
+                        // 判断是否需要保留原来的文件结构
+                        if (keepDirStructure) {
+                            // 注意：file.getName()前面需要带上父文件夹的名字加一斜杠,
+                            // 不然最后压缩包中就不能保留原来的文件结构,即：所有文件都跑到压缩包根目录下了
+                            compress(file, zos, name + "/" + file.getName(), keepDirStructure);
+                        } else {
+                            compress(file, zos, file.getName(), keepDirStructure);
+                        }
                     }
                 }
             }
+        } catch (Exception e) {
+            throw new RuntimeException("压缩错误", e);
         }
     }
 
+    /**
+     * zip格式的压缩文件解压
+     *
+     * @param zipFilePath 待解压的压缩文件
+     * @param destDir     要解压到的文件夹
+     */
+    public static void unzip(String zipFilePath, String destDir) {
+        try (
+                FileInputStream fis = new FileInputStream(zipFilePath);
+                ZipInputStream zis = new ZipInputStream(fis);
+        ) {
+            File destDirFile = new File(destDir);
+            if (!destDirFile.exists()) {
+                destDirFile.mkdirs(); // 确保目标目录存在
+            }
+            ZipEntry ze = zis.getNextEntry();
+            byte[] buffer = new byte[1024];
+            int length;
+            while (ze != null) {
+                File newFile = new File(destDir + File.separator + ze.getName());
+                // 确保文件所在的目录存在
+                newFile.getParentFile().mkdirs();
+                FileOutputStream fos = new FileOutputStream(newFile);
+                while ((length = zis.read(buffer)) > 0) {
+                    fos.write(buffer, 0, length);
+                }
+                fos.close();
+                zis.closeEntry();
+                ze = zis.getNextEntry();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * InputStream 或 FileInputStream 转 byte[ ]
+     *
+     */
+    public static byte[] toByteArray(InputStream input) {
+        int nRead;
+        byte[] data = new byte[16384];
+        try (ByteArrayOutputStream buffer = new ByteArrayOutputStream()) {
+            while ((nRead = input.read(data, 0, data.length)) != -1) {
+                buffer.write(data, 0, nRead);
+            }
+            buffer.flush();
+            return buffer.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return new byte[1];
+    }
+
+
 }
 
-```
 
-# 二、 测试
-## 1.压缩文件夹
+```
+---
+### 测试：
+1.压缩文件夹：
 
 ```java
-import utils.ZipUtils;
-import java.io.*;
+import com.hai.tang.util.ZipUtils;
 
 public class Test {
     public static void main(String[] args) {
-   		 try {
-           		 //定义输出流和最终生成的文件名，如;保存到 F盘的 MyPic.zip
-            	 FileOutputStream   fileOutputStream = new FileOutputStream(new File("F:/Myfolder.zip"));
-           		 BufferedOutputStream  bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            	//开始压缩 F盘下的test文件夹
-            	ZipUtils.toZip("F:/test", bufferedOutputStream,true);
-       		 } catch (FileNotFoundException e) {
-           			 e.printStackTrace();
-       		 }
+        //将 zipTest 文件夹压缩到 C:\myCode\zipTestOut\zipTest.zip
+        ZipUtils.toZip("C:\\myCode\\zipTest", "C:\\myCode\\zipTestOut\\zipTest.zip", true);
      }
 }
 ```
 
-## 2 .压缩多文件
+2 .选择多个文件压缩：
 
 ```java
-import java.io.*;
+import com.hai.tang.util.ZipUtils;
+import java.io.File;
 import java.util.ArrayList;
-import utils.ZipUtils;
 import java.util.List;
 
 public class Test {
     public static void main(String[] args) {
-   		try {
-   			//要压缩的文件列表
-            List<File> fileList = new ArrayList<>();
-            fileList.add(new File("F:/test/pic1.jpg"));
-            fileList.add(new File("F:/test/doc_20210203100237.pdf"));
-            //压缩后的文件名和保存路径
-            FileOutputStream fos2 = new FileOutputStream(new File("f:/test/Myzip.zip"));
-            //开始压缩
-            ZipUtils.toZip(fileList, fos2);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
+        //要压缩的文件列表
+        List<File> fileList = new ArrayList<>();
+        fileList.add(new File("C:\\myCode\\zipTest\\sql表字段逗号拼接临时文件.txt"));
+        fileList.add(new File("C:\\myCode\\zipTest\\pom.xml"));
+        //开始压缩到C:\myCode\zipTestOut\zipList.zip
+        ZipUtils.toZip(fileList, "C:\\myCode\\zipTestOut\\zipList.zip");
      }
 }
 ```
-## 3.有时候我们可能只有文件流或者文件的字节数组，可通过字文件节数组压缩
+3.对 zip 格式解压缩：
 
-需要导入Apache Commons IO包利用 IOUtils.toByteArray 将 InputStream 转换为 byte[]
+```java
+import com.hai.tang.util.ZipUtils;
 
-```xml
-<dependency>
-    <groupId>commons-io</groupId>
-    <artifactId>commons-io</artifactId>
-    <version>2.8.0</version>
-</dependency>
+public class Test {
+    public static void main(String[] args) {
+        //将 Myfolder.zip 压缩包解压到 C:\myCode\zipTestOut 下
+       ZipUtils.unzip("C:\\myCode\\zipTestOut\\zipList.zip", "C:\\myCode\\zipTestOut");
+     }
+}
 ```
+
+4.有时候我们可能只有文件流或者文件的字节数组，可通过字文件节数组压缩：
 
 
 ```java
-import org.apache.commons.io.IOUtils;
-import utils.ZipUtils;
+import com.hai.tang.util.ZipUtils;
+import java.io.FileInputStream;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Test {
-    public static void main(String[] args) {
-        try {
-            //读取图片转换为byte[]
-            FileInputStream inputStream1 = new FileInputStream("F:/test/pic1.jpg");
-            byte[] bytes1 = IOUtils.toByteArray(inputStream1);
-            //读取pdf转换为byte[]
-            FileInputStream inputStream2 = new FileInputStream("F:/test/doc_20210203100237.pdf");
-            byte[] bytes2 = IOUtils.toByteArray(inputStream2);
-            //读取txt转换为byte[]
-            FileInputStream inputStream3 = new FileInputStream("F:/test/za.txt");
-            byte[] bytes3 = IOUtils.toByteArray(inputStream3);
+    public static void main(String[] args) throws FileNotFoundException {
+        FileInputStream inputStream1 = new FileInputStream("C:\\myCode\\zipTest\\aa.jpg");
+        FileInputStream inputStream2 = new FileInputStream("C:\\myCode\\zipTest\\sql表字段逗号拼接临时文件.txt");
+        FileInputStream inputStream3 = new FileInputStream("C:\\myCode\\zipTest\\kone-rbac-2.3.2.6.jar");
+        
+        //将上面三个文件的输入流转为字节数组
+        byte[] bytes1 = ZipUtils.toByteArray(inputStream1);
+        byte[] bytes2 = ZipUtils.toByteArray(inputStream2);
+        byte[] bytes3 = ZipUtils.toByteArray(inputStream3);
 
-            //三个文件存入picMap
-            Map<String, byte[]> picMap = new HashMap<>();
-            picMap.put("pic1.jpg", bytes1);
-            picMap.put("doc_20210203100237.pdf", bytes2);
-            picMap.put("za.txt", bytes3);
+        //三个文件字节数组存入map
+        Map<String, byte[]> map = new HashMap<>();
+        map.put("aa.jpg", bytes1);
+        map.put("sql表字段逗号拼接临时文件.txt", bytes2);
+        map.put("kone-rbac-2.3.2.6.jar", bytes3);
 
-            //定义输出流和最终生成的文件名，如;MyPic.zip
-            FileOutputStream fileOutputStream = new FileOutputStream(new File("F:/test/MyPic.zip"));
-            BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(fileOutputStream);
-            //开始压缩
-            ZipUtils.toZip(picMap, bufferedOutputStream);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        //将 上面三个文件 压缩到 C:\myCode\MyzipTest.zip
+        ZipUtils.toZip(map, "C:\\myCode\\zipTestOut\\MyzipTest.zip");
 
     }
 }
