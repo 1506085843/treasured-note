@@ -1497,7 +1497,7 @@ byte[] bytes = FileUtils.readFileToByteArray(file);
 
 ```java
 ByteArrayOutputStream byteArrayOutputStream = getByteStreamMethod();
-try(OutputStream outputStream = new FileOutputStream("thefilename")) {
+try(OutputStream outputStream = new FileOutputStream("F:/test1.txt")) {
     byteArrayOutputStream.writeTo(outputStream);
 } catch (FileNotFoundException e) {
     e.printStackTrace();
@@ -1564,7 +1564,7 @@ try(OutputStream outputStream = new FileOutputStream("thefilename")) {
 
 ```java
         byte[] bytes = ...;
-        FileUtils.writeByteArrayToFile(new File("pathname"), bytes);
+        FileUtils.writeByteArrayToFile(new File("F:/test1.txt"), bytes);
 ```
 
 ### 三十五、byte[]转String
